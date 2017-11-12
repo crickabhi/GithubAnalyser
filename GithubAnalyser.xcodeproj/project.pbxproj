@@ -8,13 +8,17 @@
 
 /* Begin PBXBuildFile section */
 		D1C7027B1FB85C6F00003EB2 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = D1C7027A1FB85C6F00003EB2 /* AppDelegate.swift */; };
-		D1C7027D1FB85C6F00003EB2 /* ViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = D1C7027C1FB85C6F00003EB2 /* ViewController.swift */; };
+		D1C7027D1FB85C6F00003EB2 /* LoginViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = D1C7027C1FB85C6F00003EB2 /* LoginViewController.swift */; };
 		D1C702801FB85C6F00003EB2 /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = D1C7027E1FB85C6F00003EB2 /* Main.storyboard */; };
 		D1C702831FB85C6F00003EB2 /* GithubAnalyser.xcdatamodeld in Sources */ = {isa = PBXBuildFile; fileRef = D1C702811FB85C6F00003EB2 /* GithubAnalyser.xcdatamodeld */; };
 		D1C702851FB85C6F00003EB2 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = D1C702841FB85C6F00003EB2 /* Assets.xcassets */; };
 		D1C702881FB85C6F00003EB2 /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = D1C702861FB85C6F00003EB2 /* LaunchScreen.storyboard */; };
 		D1C702931FB85C6F00003EB2 /* GithubAnalyserTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = D1C702921FB85C6F00003EB2 /* GithubAnalyserTests.swift */; };
 		D1C7029E1FB85C6F00003EB2 /* GithubAnalyserUITests.swift in Sources */ = {isa = PBXBuildFile; fileRef = D1C7029D1FB85C6F00003EB2 /* GithubAnalyserUITests.swift */; };
+		D1C702AC1FB8775100003EB2 /* ProfileViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = D1C702AB1FB8775100003EB2 /* ProfileViewController.swift */; };
+		D1C702AE1FB88A2300003EB2 /* CoreDataStack.swift in Sources */ = {isa = PBXBuildFile; fileRef = D1C702AD1FB88A2300003EB2 /* CoreDataStack.swift */; };
+		D1C702B01FB88D0800003EB2 /* SearchViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = D1C702AF1FB88D0800003EB2 /* SearchViewController.swift */; };
+		D1C702B21FB88DC900003EB2 /* ProfileInfoTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = D1C702B11FB88DC900003EB2 /* ProfileInfoTableViewCell.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -37,7 +41,7 @@
 /* Begin PBXFileReference section */
 		D1C702771FB85C6F00003EB2 /* GithubAnalyser.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = GithubAnalyser.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		D1C7027A1FB85C6F00003EB2 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
-		D1C7027C1FB85C6F00003EB2 /* ViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ViewController.swift; sourceTree = "<group>"; };
+		D1C7027C1FB85C6F00003EB2 /* LoginViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LoginViewController.swift; sourceTree = "<group>"; };
 		D1C7027F1FB85C6F00003EB2 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/Main.storyboard; sourceTree = "<group>"; };
 		D1C702821FB85C6F00003EB2 /* GithubAnalyser.xcdatamodel */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcdatamodel; path = GithubAnalyser.xcdatamodel; sourceTree = "<group>"; };
 		D1C702841FB85C6F00003EB2 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
@@ -49,6 +53,10 @@
 		D1C702991FB85C6F00003EB2 /* GithubAnalyserUITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = GithubAnalyserUITests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		D1C7029D1FB85C6F00003EB2 /* GithubAnalyserUITests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GithubAnalyserUITests.swift; sourceTree = "<group>"; };
 		D1C7029F1FB85C6F00003EB2 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		D1C702AB1FB8775100003EB2 /* ProfileViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProfileViewController.swift; sourceTree = "<group>"; };
+		D1C702AD1FB88A2300003EB2 /* CoreDataStack.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CoreDataStack.swift; sourceTree = "<group>"; };
+		D1C702AF1FB88D0800003EB2 /* SearchViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SearchViewController.swift; sourceTree = "<group>"; };
+		D1C702B11FB88DC900003EB2 /* ProfileInfoTableViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProfileInfoTableViewCell.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -100,7 +108,11 @@
 			isa = PBXGroup;
 			children = (
 				D1C7027A1FB85C6F00003EB2 /* AppDelegate.swift */,
-				D1C7027C1FB85C6F00003EB2 /* ViewController.swift */,
+				D1C7027C1FB85C6F00003EB2 /* LoginViewController.swift */,
+				D1C702AB1FB8775100003EB2 /* ProfileViewController.swift */,
+				D1C702AF1FB88D0800003EB2 /* SearchViewController.swift */,
+				D1C702B11FB88DC900003EB2 /* ProfileInfoTableViewCell.swift */,
+				D1C702AD1FB88A2300003EB2 /* CoreDataStack.swift */,
 				D1C7027E1FB85C6F00003EB2 /* Main.storyboard */,
 				D1C702841FB85C6F00003EB2 /* Assets.xcassets */,
 				D1C702861FB85C6F00003EB2 /* LaunchScreen.storyboard */,
@@ -262,8 +274,12 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				D1C7027D1FB85C6F00003EB2 /* ViewController.swift in Sources */,
+				D1C702B21FB88DC900003EB2 /* ProfileInfoTableViewCell.swift in Sources */,
+				D1C702B01FB88D0800003EB2 /* SearchViewController.swift in Sources */,
+				D1C702AE1FB88A2300003EB2 /* CoreDataStack.swift in Sources */,
+				D1C7027D1FB85C6F00003EB2 /* LoginViewController.swift in Sources */,
 				D1C7027B1FB85C6F00003EB2 /* AppDelegate.swift in Sources */,
+				D1C702AC1FB8775100003EB2 /* ProfileViewController.swift in Sources */,
 				D1C702831FB85C6F00003EB2 /* GithubAnalyser.xcdatamodeld in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -433,6 +449,7 @@
 				CODE_SIGN_STYLE = Automatic;
 				DEVELOPMENT_TEAM = 6339ZWMFHV;
 				INFOPLIST_FILE = GithubAnalyser/Info.plist;
+				IPHONEOS_DEPLOYMENT_TARGET = 8.0;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
 				PRODUCT_BUNDLE_IDENTIFIER = com.crickabhi.GithubAnalyser;
 				PRODUCT_NAME = "$(TARGET_NAME)";
@@ -448,6 +465,7 @@
 				CODE_SIGN_STYLE = Automatic;
 				DEVELOPMENT_TEAM = 6339ZWMFHV;
 				INFOPLIST_FILE = GithubAnalyser/Info.plist;
+				IPHONEOS_DEPLOYMENT_TARGET = 8.0;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
 				PRODUCT_BUNDLE_IDENTIFIER = com.crickabhi.GithubAnalyser;
 				PRODUCT_NAME = "$(TARGET_NAME)";
