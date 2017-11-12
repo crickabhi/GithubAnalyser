@@ -19,6 +19,7 @@
 		D1C702AE1FB88A2300003EB2 /* CoreDataStack.swift in Sources */ = {isa = PBXBuildFile; fileRef = D1C702AD1FB88A2300003EB2 /* CoreDataStack.swift */; };
 		D1C702B01FB88D0800003EB2 /* SearchViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = D1C702AF1FB88D0800003EB2 /* SearchViewController.swift */; };
 		D1C702B21FB88DC900003EB2 /* ProfileInfoTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = D1C702B11FB88DC900003EB2 /* ProfileInfoTableViewCell.swift */; };
+		D1C702B41FB8C5A200003EB2 /* Helper.swift in Sources */ = {isa = PBXBuildFile; fileRef = D1C702B31FB8C5A200003EB2 /* Helper.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -57,6 +58,7 @@
 		D1C702AD1FB88A2300003EB2 /* CoreDataStack.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CoreDataStack.swift; sourceTree = "<group>"; };
 		D1C702AF1FB88D0800003EB2 /* SearchViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SearchViewController.swift; sourceTree = "<group>"; };
 		D1C702B11FB88DC900003EB2 /* ProfileInfoTableViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProfileInfoTableViewCell.swift; sourceTree = "<group>"; };
+		D1C702B31FB8C5A200003EB2 /* Helper.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Helper.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -112,6 +114,7 @@
 				D1C702AB1FB8775100003EB2 /* ProfileViewController.swift */,
 				D1C702AF1FB88D0800003EB2 /* SearchViewController.swift */,
 				D1C702B11FB88DC900003EB2 /* ProfileInfoTableViewCell.swift */,
+				D1C702B31FB8C5A200003EB2 /* Helper.swift */,
 				D1C702AD1FB88A2300003EB2 /* CoreDataStack.swift */,
 				D1C7027E1FB85C6F00003EB2 /* Main.storyboard */,
 				D1C702841FB85C6F00003EB2 /* Assets.xcassets */,
@@ -281,6 +284,7 @@
 				D1C7027B1FB85C6F00003EB2 /* AppDelegate.swift in Sources */,
 				D1C702AC1FB8775100003EB2 /* ProfileViewController.swift in Sources */,
 				D1C702831FB85C6F00003EB2 /* GithubAnalyser.xcdatamodeld in Sources */,
+				D1C702B41FB8C5A200003EB2 /* Helper.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

@@ -11,7 +11,6 @@ import UIKit
 enum OpenedFrom: Int {
     case login = 0
     case search
-    case followers
 }
 
 
@@ -37,19 +36,23 @@ class ProfileViewController: UIViewController {
         if openedFrom == .search {
             let button = UIBarButtonItem(barButtonSystemItem: UIBarButtonSystemItem.cancel, target: self, action: #selector(close))
             self.navigationItem.rightBarButtonItem  = button
-            loadViewWithVariables()
-        }
-        else {
-            let button = UIBarButtonItem(barButtonSystemItem: UIBarButtonSystemItem.search, target: self, action: #selector(search))
-            self.navigationItem.rightBarButtonItem  = button
-            if openedFrom == .followers {
-                if let login = userDetails?["login"] as? String {
+            if let login = userDetails?["login"] as? String {
+                if let userDetails = Helper.getUserDetail(searchKey: login) {
+                    self.userDetails = userDetails
+                    loadViewWithVariables()
+                }
+                else {
                     apiCall(urlString: "https://api.github.com/users/" + login)
                 }
             }
             else {
                 loadViewWithVariables()
             }
+        }
+        else {
+            let button = UIBarButtonItem(barButtonSystemItem: UIBarButtonSystemItem.search, target: self, action: #selector(search))
+            self.navigationItem.rightBarButtonItem  = button
+            loadViewWithVariables()
         }
         
         navigationItem.title = userDetails?["login"] as? String
@@ -137,11 +140,6 @@ class ProfileViewController: UIViewController {
             if sender != nil {
                let destinationVC = segue.destination as? SearchViewController
                 destinationVC?.records = sender as? [[String : Any]?]
-                destinationVC?.openedFrom = .followers
-            }
-            else {
-                let destinationVC = segue.destination as? SearchViewController
-                destinationVC?.openedFrom = .search
             }
         }
     }
@@ -172,7 +170,24 @@ class ProfileViewController: UIViewController {
                     } else {
                         if let usableData = data {
                             
-                            if self.openedFrom == .followers {
+                            if urlString == self.userDetails?["followers_url"] as? String {
+                                let jsonData = try! JSONSerialization.jsonObject(with: usableData, options: []) as? [[String: Any]]
+                                if let records = jsonData, records.isEmpty == true {
+//                                self.showError(title: "Login Error", message: errorMessage)
+                                }
+                                else {
+                                    if let users = jsonData {
+                                        for userDetail in users {
+                                            Helper.addUser(user: userDetail)
+                                        }
+                                    }
+                                    
+                                    DispatchQueue.main.async {
+                                        self.performSegue(withIdentifier: "search", sender: jsonData)
+                                    }
+                                }
+                            }
+                            else {
                                 let jsonData = try! JSONSerialization.jsonObject(with: usableData, options: []) as? [String: Any]
                                 if let records = jsonData, records.isEmpty == true {
 //                                self.showError(title: "Login Error", message: errorMessage)
@@ -181,18 +196,7 @@ class ProfileViewController: UIViewController {
                                     self.userDetails = jsonData
                                     DispatchQueue.main.async {
                                         self.loadViewWithVariables()
-                                        self.openedFrom = .search
-                                    }
-                                }
-                            }
-                            else {
-                                let jsonData = try! JSONSerialization.jsonObject(with: usableData, options: []) as? [[String: Any]]
-                                if let records = jsonData, records.isEmpty == true {
-//                                self.showError(title: "Login Error", message: errorMessage)
-                                }
-                                else {
-                                    DispatchQueue.main.async {
-                                        self.performSegue(withIdentifier: "search", sender: jsonData)
+//                                        self.openedFrom = .search
                                     }
                                 }
                             }

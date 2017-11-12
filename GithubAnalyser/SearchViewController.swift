@@ -66,6 +66,7 @@ class SearchViewController: UIViewController {
 //                                self.showError(title: "Login Error", message: errorMessage)
                             }
                             else {
+                                Helper.addUser(user: jsonData)
                                 self.records = [jsonData]
                                 DispatchQueue.main.async {
                                     self.tableView.reloadData()
@@ -168,15 +169,7 @@ extension SearchViewController : UITableViewDelegate,UITableViewDataSource {
         if let VC = storyboard?.instantiateViewController(withIdentifier: "profileVC") as? ProfileViewController {
             let navVC = UINavigationController(rootViewController: VC)
             VC.userDetails = records?[indexPath.row]
-            VC.openedFrom = openedFrom
-//            if (records?[indexPath.row]?["name"] as? String) != nil {
-//                VC.openedFrom = .search
-//            }
-//            else {
-//                VC.openedFrom = .followers
-//            }
-//            UIApplication.topViewController()?.present(VC, animated: true, completion: nil)
-
+            VC.openedFrom = .search
             self.present(navVC, animated: true, completion: nil)
         }
     }

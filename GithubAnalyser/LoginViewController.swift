@@ -10,8 +10,8 @@ import UIKit
 import Foundation
 
 class LoginViewController: UIViewController {
-    @IBOutlet weak var usernameInput: UITextField!
-    @IBOutlet weak var loginButton: UIButton!
+    @IBOutlet weak var usernameInput: UITextField?
+    @IBOutlet weak var loginButton: UIButton?
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -28,10 +28,24 @@ class LoginViewController: UIViewController {
     
     @IBAction func loginButtonClicked(_ sender: Any) {
         
-        getApiCallResults(username: usernameInput.text)
+        if let input = usernameInput?.text, let userDetails = Helper.getUserDetail(searchKey: input) {
+            self.performSegue(withIdentifier: "profile", sender: userDetails)
+        }
+        else {
+            getApiCallResults(username: usernameInput?.text)
+        }
     }
     
     // MARK:- Update UI
+    override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
+        
+        if segue.identifier == "profile" {
+            let destinationVC = segue.destination as? ProfileViewController
+            destinationVC?.userDetails = sender as? [String: Any]
+            destinationVC?.openedFrom = .login
+        }
+    }
+    
     func showError(title : String, message : String) {
         DispatchQueue.main.async(execute: {
             // update the view
@@ -74,6 +88,7 @@ class LoginViewController: UIViewController {
                                 self.showError(title: "Login Error", message: errorMessage)
                             }
                             else {
+                                Helper.addUser(user: jsonData)
                                 DispatchQueue.main.async {
                                     self.performSegue(withIdentifier: "profile", sender: jsonData)
                                 }
@@ -88,15 +103,6 @@ class LoginViewController: UIViewController {
         }
         else {
             showError(title: "Login Error", message: "Please enter a username")
-        }
-    }
-    
-    override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
-        
-        if segue.identifier == "profile" {
-            let destinationVC = segue.destination as? ProfileViewController
-            destinationVC?.userDetails = sender as? [String: Any]
-            destinationVC?.openedFrom = .login
         }
     }
     
