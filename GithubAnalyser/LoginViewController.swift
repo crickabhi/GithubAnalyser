@@ -10,13 +10,23 @@ import UIKit
 import Foundation
 
 class LoginViewController: UIViewController {
+    
+    // MARK: - Variables
     @IBOutlet weak var usernameInput: UITextField?
     @IBOutlet weak var loginButton: UIButton?
+    @IBOutlet weak var viewWithShadow: UIView!
     
+    // MARK: - Initialisation
     override func viewDidLoad() {
         super.viewDidLoad()
         let tap: UITapGestureRecognizer = UITapGestureRecognizer(target: self, action: #selector(dismissKeyboard))
         view.addGestureRecognizer(tap)
+
+        navigationController?.navigationBar.isTranslucent = false
+        loginButton?.layer.masksToBounds = true
+        loginButton?.layer.cornerRadius = 10.0
+        
+        viewWithShadow.dropShadow(offsetWidth: 20, offsetHeight:10)
 
         // Do any additional setup after loading the view, typically from a nib.
     }
@@ -27,7 +37,7 @@ class LoginViewController: UIViewController {
     }
     
     @IBAction func loginButtonClicked(_ sender: Any) {
-        
+                
         if let input = usernameInput?.text, let userDetails = Helper.getUserDetail(searchKey: input) {
             self.performSegue(withIdentifier: "profile", sender: userDetails)
         }
@@ -35,6 +45,7 @@ class LoginViewController: UIViewController {
             getApiCallResults(username: usernameInput?.text)
         }
     }
+    
     
     // MARK:- Update UI
     override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
@@ -46,63 +57,51 @@ class LoginViewController: UIViewController {
         }
     }
     
-    func showError(title : String, message : String) {
-        DispatchQueue.main.async(execute: {
-            // update the view
-            let alert = UIAlertController(title: title, message: message, preferredStyle: UIAlertControllerStyle.alert);
-            alert.addAction(UIAlertAction(title: "OK", style: UIAlertActionStyle.default, handler: nil))
-            UIApplication.shared.keyWindow?.rootViewController?.present(alert, animated: true, completion: nil)
-        })
-    }
     
     // MARK:- API Call
     func getApiCallResults(username: String?) {
         
-        if let username = username, username.isEmpty == false {
+        if let username = username?.trimmingCharacters(in: .whitespaces), username.isEmpty == false {
             
-            let urlString = "https://api.github.com/users/" + username
+            let urlString = Helper.userDetailHomeUrl + username
             if let Url = URL(string:urlString) {
                 let indicator = UIActivityIndicatorView(activityIndicatorStyle: .gray)
                 indicator.center = view.center
                 view.addSubview(indicator)
                 indicator.startAnimating()
 
-                let task = URLSession.shared.dataTask(with: Url) { (data, response, error) in
-                    
+                Helper.getDataFromUrl(url: Url) { data, response, error in
                     defer {
                         DispatchQueue.main.async {
                             indicator.stopAnimating()
                         }
                     }
-                    if error != nil {
+                    guard let data = data, error == nil else {
                         DispatchQueue.main.async {
-                            let alert = UIAlertController(title: "Error", message: error?.localizedDescription, preferredStyle: UIAlertControllerStyle.alert);
-                            alert.addAction(UIAlertAction(title: "OK", style: UIAlertActionStyle.default, handler: nil))
-                            UIApplication.shared.keyWindow?.rootViewController?.present(alert, animated: true, completion: nil)
+                            self.loginButton?.shake()
                         }
-                    } else {
-                        if let usableData = data {
-                            
-                            let jsonData = try! JSONSerialization.jsonObject(with: usableData, options: []) as? [String: Any]
-                            if let errorMessage = jsonData?["message"] as? String {
-                                self.showError(title: "Login Error", message: errorMessage)
-                            }
-                            else {
-                                Helper.addUser(user: jsonData)
-                                DispatchQueue.main.async {
-                                    self.performSegue(withIdentifier: "profile", sender: jsonData)
-                                }
-                                
-                            }
-
+                        Helper.showError(title: "Error", message: error?.localizedDescription)
+                        return
+                    }
+                    let jsonData = try! JSONSerialization.jsonObject(with: data, options: []) as? [String: Any]
+                    if let errorMessage = jsonData?["message"] as? String {
+                        DispatchQueue.main.async {
+                            self.loginButton?.shake()
+                        }
+                        Helper.showError(title: "Login Error", message: errorMessage)
+                    }
+                    else {
+                        Helper.addUser(user: jsonData)
+                        DispatchQueue.main.async {
+                            self.performSegue(withIdentifier: "profile", sender: jsonData)
                         }
                     }
                 }
-                task.resume()
             }
         }
         else {
-            showError(title: "Login Error", message: "Please enter a username")
+            loginButton?.shake()
+            Helper.showError(title: "Login Error", message: "Please enter a username")
         }
     }
     

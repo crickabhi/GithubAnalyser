@@ -16,6 +16,7 @@ enum OpenedFrom: Int {
 
 class ProfileViewController: UIViewController {
 
+    // MARK: - Variables
     @IBOutlet weak var userImage: UIImageView?
     @IBOutlet weak var userName: UILabel?
     @IBOutlet weak var userLocation: UILabel?
@@ -27,9 +28,15 @@ class ProfileViewController: UIViewController {
     @IBOutlet weak var userFollowersCount: UILabel?
     @IBOutlet weak var followersLabel: UILabel?
     
+    @IBOutlet weak var followersView: UIView?
+    @IBOutlet weak var publicRepoView: UIView?
+    @IBOutlet weak var publicGistsView: UIView?
+    @IBOutlet weak var bottomView: UIView?
+    
     var userDetails : [String : Any]?
     var openedFrom : OpenedFrom?
     
+    // MARK:- Initialisation
     override func viewDidLoad() {
         super.viewDidLoad()
 
@@ -42,7 +49,7 @@ class ProfileViewController: UIViewController {
                     loadViewWithVariables()
                 }
                 else {
-                    apiCall(urlString: "https://api.github.com/users/" + login)
+                    apiCall(urlString: Helper.userDetailHomeUrl + login)
                 }
             }
             else {
@@ -54,72 +61,54 @@ class ProfileViewController: UIViewController {
             self.navigationItem.rightBarButtonItem  = button
             loadViewWithVariables()
         }
-        
         navigationItem.title = userDetails?["login"] as? String
-        
+        navigationController?.navigationBar.isTranslucent = false
+
+        userImage?.setBorder(width: 2.0, radius: 10, color : .white)
+
+        bottomView?.setBorder(width: 2.0, radius: 5, color : UIColor.init(red: 81/255, green: 146/255, blue: 188/255, alpha: 1.0))
     }
     
     func loadViewWithVariables() {
+        
         userName?.text = userDetails?["name"] as? String
-        userLocation?.text = userDetails?["location"] as? String
-        userLastUpdateTime?.text = getLocalFormatdate(dateString: userDetails?["updated_at"] as? String)
+        
+        if let location = userDetails?["location"] as? String {
+            userLocation?.text = "Location :- " + location
+        }
+        
+        if let time = Helper.getLocalFormatdate(dateString: userDetails?["updated_at"] as? String) {
+            userLastUpdateTime?.text = "Last Update :- " + time
+        }
+        
         if let publicRepoCount = userDetails?["public_repos"] {
             userPublicRepoCount?.text = String(describing: publicRepoCount)
         }
         else {
             userPublicRepoCount?.text = "0"
         }
-        publicRepoLabel?.text = "Public Repository"
+
         if let publicGistsCount = userDetails?["public_gists"] {
             userPublicGistsCount?.text = String(describing: publicGistsCount)
         }
         else {
             userPublicGistsCount?.text = "0"
         }
-        publicGistsLabel?.text = "Public Gists"
+        
         if let followersCount = userDetails?["followers"] {
             userFollowersCount?.text = String(describing: followersCount)
             let tap: UITapGestureRecognizer = UITapGestureRecognizer(target: self, action: #selector(openFollowersList))
-            userFollowersCount?.addGestureRecognizer(tap)
-            followersLabel?.addGestureRecognizer(tap)
+            followersView?.addGestureRecognizer(tap)
         }
         else {
             userFollowersCount?.text = "0"
         }
-        followersLabel?.text = "Followers"
         
         if let avatarUrl = userDetails?["avatar_url"] as? String, let url = URL(string: avatarUrl) {
             userImage?.contentMode = .scaleAspectFit
+            userImage?.layer.masksToBounds = true
             downloadImage(url: url)
         }
-    }
-
-    func downloadImage(url: URL) {
-        print("Download Started")
-        getDataFromUrl(url: url) { data, response, error in
-            guard let data = data, error == nil else { return }
-            print(response?.suggestedFilename ?? url.lastPathComponent)
-            print("Download Finished")
-            DispatchQueue.main.async() {
-                self.userImage?.image = UIImage(data: data)
-            }
-        }
-    }
-    
-    func getDataFromUrl(url: URL, completion: @escaping (Data?, URLResponse?, Error?) -> ()) {
-        URLSession.shared.dataTask(with: url) { data, response, error in
-            completion(data, response, error)
-            }.resume()
-    }
-    
-    func getLocalFormatdate(dateString: String?)-> String? {
-        
-        let formatter = DateFormatter()
-        formatter.dateFormat = "yyyy-MM-dd'T'HH:mm:ss'Z'"
-        let date1  = formatter.date(from: dateString!)
-        print("date:\(String(describing: date1))")
-        formatter.dateFormat = "HH:mm 'on' d MMM''yy"
-        return formatter.string(from: date1!)
     }
     
     @objc func search() {
@@ -134,16 +123,46 @@ class ProfileViewController: UIViewController {
         apiCall(urlString: userDetails?["followers_url"] as? String)
     }
     
+    
+    // MARK: - Image download helper
+    func downloadImage(url: URL) {
+         //(activityIndicatorStyle: .gray)
+        if let image = userImage {
+            let indicator = UIActivityIndicatorView(frame: image.bounds)
+            indicator.activityIndicatorViewStyle = .gray
+            indicator.isHidden = false
+            indicator.center = image.center
+            userImage?.addSubview(indicator)
+            indicator.startAnimating()
+            Helper.getDataFromUrl(url: url) { data, response, error in
+                guard let data = data, error == nil else { return }
+                print(response?.suggestedFilename ?? url.lastPathComponent)
+                DispatchQueue.main.async() {
+                    defer {
+                        indicator.stopAnimating()
+                    }
+                    self.userImage?.image = UIImage(data: data)
+                }
+            }
+        }
+    }
+    
+    
+    // MARK:- Update UI
     override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
         
         if segue.identifier == "search" {
             if sender != nil {
                let destinationVC = segue.destination as? SearchViewController
-                destinationVC?.records = sender as? [[String : Any]?]
+                if let user = sender as? [[String : Any]?] {
+                    destinationVC?.records = user
+                }
             }
         }
     }
     
+    
+    // MARK:- API Call
     func apiCall(urlString : String?) {
         
         if let urlString = urlString, urlString.isEmpty == false {
@@ -154,65 +173,50 @@ class ProfileViewController: UIViewController {
                 view.addSubview(indicator)
                 indicator.startAnimating()
                 
-                let task = URLSession.shared.dataTask(with: Url) { (data, response, error) in
-                    
+                Helper.getDataFromUrl(url: Url) { data, response, error in
                     defer {
                         DispatchQueue.main.async {
                             indicator.stopAnimating()
                         }
                     }
-                    if error != nil {
-                        DispatchQueue.main.async {
-                            let alert = UIAlertController(title: "Error", message: error?.localizedDescription, preferredStyle: UIAlertControllerStyle.alert);
-                            alert.addAction(UIAlertAction(title: "OK", style: UIAlertActionStyle.default, handler: nil))
-                            UIApplication.shared.keyWindow?.rootViewController?.present(alert, animated: true, completion: nil)
-                        }
-                    } else {
-                        if let usableData = data {
+                    guard let data = data, error == nil else {
+                        Helper.showError(title: "Error", message: error?.localizedDescription)
+                        return
+                    }
+                    if urlString == self.userDetails?["followers_url"] as? String {
+                        let jsonData = try! JSONSerialization.jsonObject(with: data, options: []) as? [[String: Any]]
+                        if let records = jsonData, records.isEmpty == true {
                             
-                            if urlString == self.userDetails?["followers_url"] as? String {
-                                let jsonData = try! JSONSerialization.jsonObject(with: usableData, options: []) as? [[String: Any]]
-                                if let records = jsonData, records.isEmpty == true {
-//                                self.showError(title: "Login Error", message: errorMessage)
-                                }
-                                else {
-                                    if let users = jsonData {
-                                        for userDetail in users {
-                                            Helper.addUser(user: userDetail)
-                                        }
-                                    }
-                                    
-                                    DispatchQueue.main.async {
-                                        self.performSegue(withIdentifier: "search", sender: jsonData)
-                                    }
+                        }
+                        else {
+                            if let users = jsonData {
+                                for userDetail in users {
+                                    Helper.addUser(user: userDetail)
                                 }
                             }
-                            else {
-                                let jsonData = try! JSONSerialization.jsonObject(with: usableData, options: []) as? [String: Any]
-                                if let records = jsonData, records.isEmpty == true {
-//                                self.showError(title: "Login Error", message: errorMessage)
-                                }
-                                else {
-                                    self.userDetails = jsonData
-                                    DispatchQueue.main.async {
-                                        self.loadViewWithVariables()
-//                                        self.openedFrom = .search
-                                    }
-                                }
+                            
+                            DispatchQueue.main.async {
+                                self.performSegue(withIdentifier: "search", sender: jsonData)
+                            }
+                        }
+                    }
+                    else {
+                        let jsonData = try! JSONSerialization.jsonObject(with: data, options: []) as? [String: Any]
+                        if let records = jsonData, records.isEmpty == true {
+                            
+                        }
+                        else {
+                            self.userDetails = jsonData
+                            DispatchQueue.main.async {
+                                self.loadViewWithVariables()
                             }
                         }
                     }
                 }
-                task.resume()
             }
         }
         else {
-//            showError(title: "Login Error", message: "Please enter a username")
+
         }
-    }
-    
-    override func didReceiveMemoryWarning() {
-        super.didReceiveMemoryWarning()
-        // Dispose of any resources that can be recreated.
     }
 }

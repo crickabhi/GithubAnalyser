@@ -10,22 +10,28 @@ import UIKit
 
 class SearchViewController: UIViewController {
 
-    @IBOutlet weak var searchBar: UISearchBar!
-    @IBOutlet weak var tableView: UITableView!
+    // MARK: - Variables
+    @IBOutlet weak var searchBar: UISearchBar?
+    @IBOutlet weak var tableView: UITableView?
     
-    var records : [[String:Any]?]?
-    var openedFrom : OpenedFrom?
+    var records             : [[String:Any]?] = []
+    var totalRecords        : Int?
+    var searchKey           : String?
+    var currentPageCount    : Int = 1
+    
 
+    // MARK:- Initialisation
     override func viewDidLoad() {
         super.viewDidLoad()
 
-        tableView.delegate = self
-        tableView.dataSource = self
-        tableView.tableFooterView = UIView()
+        tableView?.delegate = self
+        tableView?.dataSource = self
+        tableView?.tableFooterView = UIView()
 
-        searchBar.delegate = self
-        searchBar.showsCancelButton = false
-        searchBar.returnKeyType = .default
+        searchBar?.delegate = self
+        searchBar?.showsCancelButton = false
+
+        navigationController?.navigationBar.isTranslucent = false
     }
     
     @objc func dismissKeyboard()
@@ -33,69 +39,76 @@ class SearchViewController: UIViewController {
         self.view.endEditing(true)
     }
     
+    
     // MARK:- API Call
-    func searchUser(username: String?) {
+    func searchUser(queryString: String?, pageCount : String?) {
         
-        if let username = username, username.isEmpty == false {
+        if let queryString = queryString, queryString.isEmpty == false {
             
-            let urlString = "https://api.github.com/users/" + username
-            if let Url = URL(string:urlString) {
+            var urlString = Helper.searchUrl
+            let queryItems = [URLQueryItem(name: "q", value: queryString), URLQueryItem(name: "page", value: pageCount)]
+            var searchUrl = URLComponents(string: Helper.searchUrl)
+            searchUrl?.queryItems = queryItems
+
+            if let Url = searchUrl?.url {
                 let indicator = UIActivityIndicatorView(activityIndicatorStyle: .gray)
                 indicator.center = view.center
                 view.addSubview(indicator)
                 indicator.startAnimating()
                 
-                let task = URLSession.shared.dataTask(with: Url) { (data, response, error) in
-                    
+                Helper.getDataFromUrl(url: Url) { data, response, error in
                     defer {
                         DispatchQueue.main.async {
                             indicator.stopAnimating()
                         }
                     }
-                    if error != nil {
-                        DispatchQueue.main.async {
-                            let alert = UIAlertController(title: "Error", message: error?.localizedDescription, preferredStyle: UIAlertControllerStyle.alert);
-                            alert.addAction(UIAlertAction(title: "OK", style: UIAlertActionStyle.default, handler: nil))
-                            UIApplication.shared.keyWindow?.rootViewController?.present(alert, animated: true, completion: nil)
-                        }
-                    } else {
-                        if let usableData = data {
+                    guard let data = data, error == nil else {
+                        Helper.showError(title: "Error", message: error?.localizedDescription)
+                        return
+                    }
+                    let jsonData = try! JSONSerialization.jsonObject(with: data, options: []) as? [AnyHashable : Any]
+                    if let json = jsonData, let records = json["items"] as? [[String : Any]], records.isEmpty == true {
+                        self.currentPageCount = 1
+                    }
+                    else {
+                        if let json = jsonData, let users = json["items"] as? [[String : Any]]  {
                             
-                            let jsonData = try! JSONSerialization.jsonObject(with: usableData, options: []) as? [String: Any]
-                            if let errorMessage = jsonData?["message"] as? String {
-//                                self.showError(title: "Login Error", message: errorMessage)
+                            for userDetail in users {
+                                Helper.addUser(user: userDetail)
+                                self.records.append(userDetail)
                             }
-                            else {
-                                Helper.addUser(user: jsonData)
-                                self.records = [jsonData]
-                                DispatchQueue.main.async {
-                                    self.tableView.reloadData()
-                                }
+                            if queryString == self.searchKey && self.totalRecords == nil {
+                                self.currentPageCount = self.currentPageCount + 1
+                            }
+                            else if queryString == self.searchKey && self.totalRecords == json["total_count"] as? Int {
+                                self.currentPageCount = self.currentPageCount + 1
+                            }
+                            
+                            if let totalCount = json["total_count"] as? Int {
+                                self.totalRecords = totalCount
+                            }
+                            DispatchQueue.main.async {
+                                self.tableView?.reloadData()
+                            }
+                        }
+                        else {
+                            if let json = jsonData, let message = json["message"] as? String, message.isEmpty == false {
+                                Helper.showError(title: "Error", message: message)
                             }
                         }
                     }
                 }
-                task.resume()
             }
         }
         else {
-            self.records = nil
-            self.tableView.reloadData()
-//            showError(title: "Login Error", message: "Please enter a username")
+
+            self.tableView?.reloadData()
         }
-    }
-    
-    // MARK:- Update UI
-    func showError(title : String, message : String) {
-        DispatchQueue.main.async(execute: {
-            // update the view
-            let alert = UIAlertController(title: title, message: message, preferredStyle: UIAlertControllerStyle.alert);
-            alert.addAction(UIAlertAction(title: "OK", style: UIAlertActionStyle.default, handler: nil))
-            UIApplication.shared.keyWindow?.rootViewController?.present(alert, animated: true, completion: nil)
-        })
     }
 }
 
+
+// MARK: - SearchBar Delegate
 extension SearchViewController : UISearchBarDelegate {
     
     func searchBarCancelButtonClicked(_ searchBar: UISearchBar) {
@@ -110,7 +123,10 @@ extension SearchViewController : UISearchBarDelegate {
     }
     
     func searchBar(_ searchBar: UISearchBar, textDidChange searchText: String) {
-        searchUser(username: searchText)
+        searchKey = searchText
+        records.removeAll()
+        tableView?.reloadData()
+        searchUser(queryString: searchText, pageCount: "1")
     }
     
     func searchBarSearchButtonClicked(_ searchBar: UISearchBar) {
@@ -118,6 +134,8 @@ extension SearchViewController : UISearchBarDelegate {
     }
 }
 
+
+// MARK: - TableView delegate and datasource
 extension SearchViewController : UITableViewDelegate,UITableViewDataSource {
     
     func numberOfSections(in tableView: UITableView) -> Int {
@@ -125,12 +143,7 @@ extension SearchViewController : UITableViewDelegate,UITableViewDataSource {
     }
     
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        if let records = records, records.isEmpty == false {
-            return records.count
-        }
-        else {
-            return 0
-        }
+        return records.count
     }
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
@@ -138,26 +151,37 @@ extension SearchViewController : UITableViewDelegate,UITableViewDataSource {
         
         if let cell = cell {
             
-            cell.name?.text = records?[indexPath.row]?["login"] as? String
-            cell.location?.text = records?[indexPath.row]?["location"] as? String
-            if let publicRepoCount = records?[indexPath.row]?["public_repos"] {
+            cell.name?.text = records[indexPath.row]?["login"] as? String
+            cell.location?.text = records[indexPath.row]?["location"] as? String
+            if let publicRepoCount = records[indexPath.row]?["public_repos"] {
                 cell.publicRepoCount?.text = String(describing: publicRepoCount)
+                cell.publicRepoLabel?.text = "Public Repo"
             }
             else {
-                cell.publicRepoCount?.text = "0"
+                cell.publicRepoCount?.isHidden = true
+                cell.publicRepoLabel?.isHidden = true
             }
-            cell.publicRepoLabel?.text = "Public Repo"
-            if let followersCount = records?[indexPath.row]?["followers"] {
+            if let followersCount = records[indexPath.row]?["followers"] {
                 cell.followersCount?.text = String(describing: followersCount)
+                cell.followersLabel?.text = "Followers"
             }
             else {
-                cell.followersCount?.text = "0"
+                cell.followersCount?.isHidden = true
+                cell.followersLabel?.isHidden = true
             }
-            cell.followersLabel?.text = "Followers"
             return cell
         }
         else {
             return UITableViewCell()
+        }
+    }
+    
+    func tableView(_ tableView: UITableView, willDisplay cell: UITableViewCell, forRowAt indexPath: IndexPath) {
+        
+        // Load Next Page Results If Required
+        let lastVisibleIndexPath = tableView.indexPathsForVisibleRows?.sorted().last
+        if let totalRecords = totalRecords, currentPageCount >= 1 && (lastVisibleIndexPath?.row == records.count - 1) && (totalRecords - records.count > 0)  {
+            searchUser(queryString: searchKey, pageCount: String(currentPageCount))
         }
     }
     
@@ -166,9 +190,10 @@ extension SearchViewController : UITableViewDelegate,UITableViewDataSource {
     }
     
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
+        tableView.deselectRow(at: indexPath, animated: true)
         if let VC = storyboard?.instantiateViewController(withIdentifier: "profileVC") as? ProfileViewController {
             let navVC = UINavigationController(rootViewController: VC)
-            VC.userDetails = records?[indexPath.row]
+            VC.userDetails = records[indexPath.row]
             VC.openedFrom = .search
             self.present(navVC, animated: true, completion: nil)
         }
