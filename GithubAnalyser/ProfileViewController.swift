@@ -57,8 +57,9 @@ class ProfileViewController: UIViewController {
             }
         }
         else {
-            let button = UIBarButtonItem(barButtonSystemItem: UIBarButtonSystemItem.search, target: self, action: #selector(search))
-            self.navigationItem.rightBarButtonItem  = button
+            let searchbutton = UIBarButtonItem(barButtonSystemItem: .search, target: self, action: #selector(search))
+            let shareButton = UIBarButtonItem(barButtonSystemItem: .action, target: self, action: #selector(share))
+            self.navigationItem.rightBarButtonItems = [shareButton,searchbutton]
             loadViewWithVariables()
         }
         navigationItem.title = userDetails?["login"] as? String
@@ -121,6 +122,27 @@ class ProfileViewController: UIViewController {
     
     @objc func openFollowersList() {
         apiCall(urlString: userDetails?["followers_url"] as? String)
+    }
+    
+    @objc func share(sender : UIButton) {
+        
+        if let name = userDetails?["name"] as? String,
+            let location = userDetails?["location"] as? String,
+            let publicRepoCount = userDetails?["public_repos"],
+            let followersCount = userDetails?["followers"]   {
+            
+            let title = "Github Profile Details"
+            let userName =  "Name :- " + name
+            let userLocation = "Location :- " + location
+            let userFollowers = "Followers :- " + String(describing: followersCount)
+            let userPublicRepo = "Public Repository :- " + String(describing: publicRepoCount)
+            
+            let objectsToShare = [title, userName, userFollowers, userPublicRepo, userLocation] as [Any]
+            let activityVC = UIActivityViewController(activityItems: objectsToShare, applicationActivities: nil)
+            
+            activityVC.popoverPresentationController?.sourceView = sender
+            self.present(activityVC, animated: true, completion: nil)
+        }
     }
     
     
