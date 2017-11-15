@@ -72,7 +72,12 @@ class ProfileViewController: UIViewController {
     
     func loadViewWithVariables() {
         
-        userName?.text = userDetails?["name"] as? String
+        if let name = userDetails?["name"] as? String {
+            userName?.text = name
+        }
+        else {
+            userName?.text = userDetails?["login"] as? String
+        }
         
         if let location = userDetails?["location"] as? String {
             userLocation?.text = "Location :- " + location

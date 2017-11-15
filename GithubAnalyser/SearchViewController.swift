@@ -17,7 +17,7 @@ class SearchViewController: UIViewController {
     var records             : [[String:Any]?] = []
     var totalRecords        : Int?
     var searchKey           : String?
-    var currentPageCount    : Int = 1
+    var currentPageCount    : Int = 0
     
 
     // MARK:- Initialisation
@@ -77,16 +77,15 @@ class SearchViewController: UIViewController {
                                 Helper.addUser(user: userDetail)
                                 self.records.append(userDetail)
                             }
-                            if queryString == self.searchKey && self.totalRecords == nil {
-                                self.currentPageCount = self.currentPageCount + 1
-                            }
-                            else if queryString == self.searchKey && self.totalRecords == json["total_count"] as? Int {
-                                self.currentPageCount = self.currentPageCount + 1
-                            }
                             
                             if let totalCount = json["total_count"] as? Int {
                                 self.totalRecords = totalCount
                             }
+
+                            if queryString == self.searchKey && self.totalRecords == json["total_count"] as? Int {
+                                self.currentPageCount = self.currentPageCount + 1
+                            }
+                            
                             DispatchQueue.main.async {
                                 self.tableView?.reloadData()
                             }
@@ -126,7 +125,8 @@ extension SearchViewController : UISearchBarDelegate {
         searchKey = searchText
         records.removeAll()
         tableView?.reloadData()
-        searchUser(queryString: searchText, pageCount: "1")
+        currentPageCount = 1
+        searchUser(queryString: searchText, pageCount: String(currentPageCount))
     }
     
     func searchBarSearchButtonClicked(_ searchBar: UISearchBar) {
@@ -147,28 +147,12 @@ extension SearchViewController : UITableViewDelegate,UITableViewDataSource {
     }
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
-        let cell = tableView.dequeueReusableCell(withIdentifier: "profileInfo") as? ProfileInfoTableViewCell
+        let cell = tableView.dequeueReusableCell(withIdentifier: "profileInfo")
         
         if let cell = cell {
+            cell.textLabel?.text = records[indexPath.row]?["login"] as? String
+            cell.textLabel?.textColor = .white
             
-            cell.name?.text = records[indexPath.row]?["login"] as? String
-            cell.location?.text = records[indexPath.row]?["location"] as? String
-            if let publicRepoCount = records[indexPath.row]?["public_repos"] {
-                cell.publicRepoCount?.text = String(describing: publicRepoCount)
-                cell.publicRepoLabel?.text = "Public Repo"
-            }
-            else {
-                cell.publicRepoCount?.isHidden = true
-                cell.publicRepoLabel?.isHidden = true
-            }
-            if let followersCount = records[indexPath.row]?["followers"] {
-                cell.followersCount?.text = String(describing: followersCount)
-                cell.followersLabel?.text = "Followers"
-            }
-            else {
-                cell.followersCount?.isHidden = true
-                cell.followersLabel?.isHidden = true
-            }
             return cell
         }
         else {
@@ -179,14 +163,14 @@ extension SearchViewController : UITableViewDelegate,UITableViewDataSource {
     func tableView(_ tableView: UITableView, willDisplay cell: UITableViewCell, forRowAt indexPath: IndexPath) {
         
         // Load Next Page Results If Required
-        let lastVisibleIndexPath = tableView.indexPathsForVisibleRows?.sorted().last
-        if let totalRecords = totalRecords, currentPageCount >= 1 && (lastVisibleIndexPath?.row == records.count - 1) && (totalRecords - records.count > 0)  {
+        if let totalRecords = totalRecords, indexPath.row == tableView.numberOfRows(inSection: 0) - 1 && records.count < totalRecords
+        {
             searchUser(queryString: searchKey, pageCount: String(currentPageCount))
         }
     }
     
     func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
-        return 80
+        return 40
     }
     
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
