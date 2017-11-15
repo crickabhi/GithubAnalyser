@@ -37,7 +37,13 @@ class LoginViewController: UIViewController {
     }
     
     @IBAction func loginButtonClicked(_ sender: Any) {
-                
+        
+        // Animate button on click
+        loginButton?.transform = CGAffineTransform(scaleX: 0, y: 0)
+        UIView.animate(withDuration: 1, delay: 0, usingSpringWithDamping: 0.3, initialSpringVelocity: 0, options: .curveEaseInOut, animations: {
+            self.loginButton?.transform = .identity
+        }, completion: nil)
+        
         if let input = usernameInput?.text, let userDetails = Helper.getUserDetail(searchKey: input) {
             self.performSegue(withIdentifier: "profile", sender: userDetails)
         }

@@ -32,6 +32,7 @@ class SearchViewController: UIViewController {
         searchBar?.showsCancelButton = false
 
         navigationController?.navigationBar.isTranslucent = false
+        navigationItem.title = "Search"
     }
     
     @objc func dismissKeyboard()

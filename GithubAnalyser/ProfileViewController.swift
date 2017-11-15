@@ -155,8 +155,7 @@ class ProfileViewController: UIViewController {
     func downloadImage(url: URL) {
          //(activityIndicatorStyle: .gray)
         if let image = userImage {
-            let indicator = UIActivityIndicatorView(frame: image.bounds)
-            indicator.activityIndicatorViewStyle = .gray
+            let indicator = UIActivityIndicatorView(activityIndicatorStyle: .gray)
             indicator.isHidden = false
             indicator.center = image.center
             userImage?.addSubview(indicator)
