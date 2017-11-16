@@ -45,10 +45,5 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         CoreDataStack.getInstance().saveContext()
         
     }
-    
-    func initialLaunch() {
-        
-    }
-
 }
 

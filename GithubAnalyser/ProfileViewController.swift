@@ -217,7 +217,7 @@ class ProfileViewController: UIViewController {
                     if urlString == self.userDetails?["followers_url"] as? String {
                         let jsonData = try! JSONSerialization.jsonObject(with: data, options: []) as? [[String: Any]]
                         if let records = jsonData, records.isEmpty == true {
-                            
+                            Helper.showError(title: "Oops!", message: "The user does not have any followers")
                         }
                         else {
                             if let users = jsonData {
