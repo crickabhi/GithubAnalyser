@@ -57,9 +57,18 @@
                                     <action selector="loginButtonClicked:" destination="3KN-QF-cWD" eventType="touchUpInside" id="9cG-qi-GIb"/>
                                 </connections>
                             </button>
+                            <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="kft-GO-ENQ" customClass="NVActivityIndicatorView" customModule="NVActivityIndicatorView">
+                                <rect key="frame" x="177" y="323" width="20" height="20"/>
+                                <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="calibratedWhite"/>
+                                <constraints>
+                                    <constraint firstAttribute="width" constant="20" id="2ic-Hn-tkv"/>
+                                    <constraint firstAttribute="height" constant="20" id="XSY-Ru-CrF"/>
+                                </constraints>
+                            </view>
                         </subviews>
                         <color key="backgroundColor" red="0.31764705882352939" green="0.5725490196078431" blue="0.73725490196078436" alpha="1" colorSpace="calibratedRGB"/>
                         <constraints>
+                            <constraint firstItem="kft-GO-ENQ" firstAttribute="centerY" secondItem="QVw-5k-NTv" secondAttribute="centerY" id="0Bd-Br-CNq"/>
                             <constraint firstItem="IrW-qa-hZO" firstAttribute="centerX" secondItem="QVw-5k-NTv" secondAttribute="centerX" id="18U-OI-ySm"/>
                             <constraint firstItem="itb-Yh-Yhf" firstAttribute="top" secondItem="8G9-8b-dMA" secondAttribute="top" constant="-20" id="3e8-E4-C54"/>
                             <constraint firstItem="KqZ-fh-Kcb" firstAttribute="width" secondItem="itb-Yh-Yhf" secondAttribute="width" multiplier="0.8" id="4zM-lI-ENZ"/>
@@ -69,12 +78,14 @@
                             <constraint firstItem="itb-Yh-Yhf" firstAttribute="bottom" secondItem="IrW-qa-hZO" secondAttribute="bottom" constant="20" id="NiN-Bc-JdT"/>
                             <constraint firstItem="KqZ-fh-Kcb" firstAttribute="centerY" secondItem="QVw-5k-NTv" secondAttribute="centerY" id="PGl-ZO-KIP"/>
                             <constraint firstItem="KqZ-fh-Kcb" firstAttribute="centerX" secondItem="QVw-5k-NTv" secondAttribute="centerX" id="YEf-W1-yiT"/>
+                            <constraint firstItem="kft-GO-ENQ" firstAttribute="centerX" secondItem="QVw-5k-NTv" secondAttribute="centerX" id="o9b-9X-av5"/>
                             <constraint firstItem="itb-Yh-Yhf" firstAttribute="width" secondItem="QVw-5k-NTv" secondAttribute="width" multiplier="0.6" id="so3-B5-0gC"/>
                             <constraint firstItem="itb-Yh-Yhf" firstAttribute="centerX" secondItem="QVw-5k-NTv" secondAttribute="centerX" id="zlS-pz-pg7"/>
                         </constraints>
                     </view>
                     <navigationItem key="navigationItem" title="Login" id="4f7-IT-MkH"/>
                     <connections>
+                        <outlet property="loadingView" destination="kft-GO-ENQ" id="rY6-EV-sEC"/>
                         <outlet property="loginButton" destination="IrW-qa-hZO" id="lnV-9J-kbX"/>
                         <outlet property="usernameInput" destination="KqZ-fh-Kcb" id="CAp-wb-LD9"/>
                         <outlet property="viewWithShadow" destination="itb-Yh-Yhf" id="uJj-II-4do"/>
@@ -167,12 +178,20 @@
                         <rect key="frame" x="0.0" y="0.0" width="375" height="667"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
-                            <imageView userInteractionEnabled="NO" contentMode="scaleAspectFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" translatesAutoresizingMaskIntoConstraints="NO" id="K6i-j4-e9F">
+                            <imageView userInteractionEnabled="NO" contentMode="scaleAspectFit" horizontalHuggingPriority="251" verticalHuggingPriority="251" translatesAutoresizingMaskIntoConstraints="NO" id="K6i-j4-e9F">
                                 <rect key="frame" x="98.5" y="74" width="179.5" height="179.5"/>
                                 <constraints>
                                     <constraint firstAttribute="width" secondItem="K6i-j4-e9F" secondAttribute="height" multiplier="1:1" id="phY-t9-KhJ"/>
                                 </constraints>
                             </imageView>
+                            <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="y6B-CY-hiE" customClass="NVActivityIndicatorView" customModule="NVActivityIndicatorView">
+                                <rect key="frame" x="178.5" y="154" width="20" height="20"/>
+                                <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="calibratedWhite"/>
+                                <constraints>
+                                    <constraint firstAttribute="height" constant="20" id="OGb-MC-0rA"/>
+                                    <constraint firstAttribute="width" constant="20" id="qSh-Cq-TXG"/>
+                                </constraints>
+                            </view>
                             <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Name" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="Ikd-w0-zEV">
                                 <rect key="frame" x="163" y="258.5" width="50" height="21"/>
                                 <fontDescription key="fontDescription" type="system" weight="semibold" pointSize="18"/>
@@ -349,6 +368,7 @@
                             <constraint firstItem="EcO-Mi-UUZ" firstAttribute="top" secondItem="jZu-lf-MsO" secondAttribute="top" id="2NL-ti-6pd"/>
                             <constraint firstItem="eJj-dR-bVe" firstAttribute="top" secondItem="Hd4-un-VyS" secondAttribute="bottom" constant="2" id="4aC-Rq-AA1"/>
                             <constraint firstItem="YlL-sm-KbA" firstAttribute="width" secondItem="bRa-iF-SkM" secondAttribute="width" id="64d-5O-Qhf"/>
+                            <constraint firstItem="y6B-CY-hiE" firstAttribute="centerX" secondItem="K6i-j4-e9F" secondAttribute="centerX" id="6bv-ma-M74"/>
                             <constraint firstItem="8am-l9-oNB" firstAttribute="top" secondItem="jZu-lf-MsO" secondAttribute="top" id="BVe-MN-GGu"/>
                             <constraint firstItem="0Ds-7a-nUF" firstAttribute="width" secondItem="bRa-iF-SkM" secondAttribute="width" id="E2e-px-4sh"/>
                             <constraint firstItem="bRa-iF-SkM" firstAttribute="top" secondItem="K6i-j4-e9F" secondAttribute="bottom" constant="30" id="GHN-VB-eAz"/>
@@ -364,6 +384,7 @@
                             <constraint firstItem="0Ds-7a-nUF" firstAttribute="centerY" secondItem="bRa-iF-SkM" secondAttribute="centerY" id="UwX-0e-ZOe"/>
                             <constraint firstItem="EcO-Mi-UUZ" firstAttribute="bottom" secondItem="5y8-tT-4hg" secondAttribute="bottom" constant="15" id="ZBN-mq-smg"/>
                             <constraint firstItem="bRa-iF-SkM" firstAttribute="trailing" secondItem="0Ds-7a-nUF" secondAttribute="leading" constant="-10" id="avj-5B-EJk"/>
+                            <constraint firstItem="y6B-CY-hiE" firstAttribute="centerY" secondItem="K6i-j4-e9F" secondAttribute="centerY" id="f0F-YL-Pwe"/>
                             <constraint firstItem="YlL-sm-KbA" firstAttribute="height" secondItem="bRa-iF-SkM" secondAttribute="height" id="gDO-eZ-HI6"/>
                             <constraint firstItem="YlL-sm-KbA" firstAttribute="centerY" secondItem="bRa-iF-SkM" secondAttribute="centerY" id="gzj-lZ-QYp"/>
                             <constraint firstItem="8am-l9-oNB" firstAttribute="bottom" secondItem="5y8-tT-4hg" secondAttribute="bottom" constant="15" id="jF2-m5-SNS"/>
@@ -383,6 +404,7 @@
                         <outlet property="bottomView" destination="ui6-Qf-VLr" id="wFg-Hd-Wvj"/>
                         <outlet property="followersLabel" destination="5y8-tT-4hg" id="OfJ-cO-F1F"/>
                         <outlet property="followersView" destination="bRa-iF-SkM" id="luX-hN-Wxp"/>
+                        <outlet property="loadingView" destination="y6B-CY-hiE" id="xZs-4H-BeR"/>
                         <outlet property="publicGistsLabel" destination="gfR-Xl-W31" id="rCb-63-Ifn"/>
                         <outlet property="publicGistsView" destination="0Ds-7a-nUF" id="juf-CA-HUF"/>
                         <outlet property="publicRepoLabel" destination="4aP-2f-Zp5" id="DkT-cQ-r9N"/>

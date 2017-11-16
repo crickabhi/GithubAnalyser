@@ -7,6 +7,7 @@
 //
 
 import UIKit
+import NVActivityIndicatorView
 
 enum OpenedFrom: Int {
     case login = 0
@@ -32,6 +33,7 @@ class ProfileViewController: UIViewController {
     @IBOutlet weak var publicRepoView: UIView?
     @IBOutlet weak var publicGistsView: UIView?
     @IBOutlet weak var bottomView: UIView?
+    @IBOutlet weak var loadingView: NVActivityIndicatorView?
     
     var userDetails : [String : Any]?
     var openedFrom : OpenedFrom?
@@ -66,7 +68,6 @@ class ProfileViewController: UIViewController {
         navigationController?.navigationBar.isTranslucent = false
 
         userImage?.setBorder(width: 2.0, radius: 10, color : .white)
-
         bottomView?.setBorder(width: 2.0, radius: 5, color : UIColor.init(red: 81/255, green: 146/255, blue: 188/255, alpha: 1.0))
     }
     
@@ -153,20 +154,24 @@ class ProfileViewController: UIViewController {
     
     // MARK: - Image download helper
     func downloadImage(url: URL) {
-         //(activityIndicatorStyle: .gray)
+
         if let image = userImage {
-            let indicator = UIActivityIndicatorView(activityIndicatorStyle: .gray)
-            indicator.isHidden = false
-            indicator.center = image.center
-            userImage?.addSubview(indicator)
-            indicator.startAnimating()
+            
+            loadingView?.type = .lineScale
+            loadingView?.color = .black
+            loadingView?.startAnimating()
+            
             Helper.getDataFromUrl(url: url) { data, response, error in
-                guard let data = data, error == nil else { return }
-                print(response?.suggestedFilename ?? url.lastPathComponent)
-                DispatchQueue.main.async() {
-                    defer {
-                        indicator.stopAnimating()
+                defer {
+                    DispatchQueue.main.async() {
+                        self.loadingView?.stopAnimating()
                     }
+                }
+                guard let data = data, error == nil else {
+                    return
+                }
+
+                DispatchQueue.main.async() {
                     self.userImage?.image = UIImage(data: data)
                 }
             }

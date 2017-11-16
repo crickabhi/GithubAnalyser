@@ -1,0 +1,6 @@
+framework module Pods_GithubAnalyser {
+  umbrella header "Pods-GithubAnalyser-umbrella.h"
+
+  export *
+  module * { export * }
+}

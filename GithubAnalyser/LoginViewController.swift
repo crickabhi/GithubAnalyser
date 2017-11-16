@@ -8,13 +8,15 @@
 
 import UIKit
 import Foundation
+import NVActivityIndicatorView
 
 class LoginViewController: UIViewController {
     
     // MARK: - Variables
     @IBOutlet weak var usernameInput: UITextField?
     @IBOutlet weak var loginButton: UIButton?
-    @IBOutlet weak var viewWithShadow: UIView!
+    @IBOutlet weak var viewWithShadow: UIView?
+    @IBOutlet weak var loadingView: NVActivityIndicatorView?
     
     // MARK: - Initialisation
     override func viewDidLoad() {
@@ -26,9 +28,7 @@ class LoginViewController: UIViewController {
         loginButton?.layer.masksToBounds = true
         loginButton?.layer.cornerRadius = 10.0
         
-        viewWithShadow.dropShadow(offsetWidth: 20, offsetHeight:10)
-
-        // Do any additional setup after loading the view, typically from a nib.
+        viewWithShadow?.dropShadow(offsetWidth: 20, offsetHeight:10)
     }
     
     @objc func dismissKeyboard()
@@ -43,7 +43,7 @@ class LoginViewController: UIViewController {
         UIView.animate(withDuration: 1, delay: 0, usingSpringWithDamping: 0.3, initialSpringVelocity: 0, options: .curveEaseInOut, animations: {
             self.loginButton?.transform = .identity
         }, completion: nil)
-        
+                
         if let input = usernameInput?.text, let userDetails = Helper.getUserDetail(searchKey: input) {
             self.performSegue(withIdentifier: "profile", sender: userDetails)
         }
@@ -71,15 +71,13 @@ class LoginViewController: UIViewController {
             
             let urlString = Helper.userDetailHomeUrl + username
             if let Url = URL(string:urlString) {
-                let indicator = UIActivityIndicatorView(activityIndicatorStyle: .gray)
-                indicator.center = view.center
-                view.addSubview(indicator)
-                indicator.startAnimating()
+                loadingView?.color = .black
+                loadingView?.startAnimating()
 
                 Helper.getDataFromUrl(url: Url) { data, response, error in
                     defer {
                         DispatchQueue.main.async {
-                            indicator.stopAnimating()
+                            self.loadingView?.stopAnimating()
                         }
                     }
                     guard let data = data, error == nil else {
